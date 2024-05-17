@@ -13,7 +13,7 @@ boolean tilt = true;
 
 int cols = floor(random(min_cols, max_cols));
 
-int fillweight = floor(random(min_fill,max_fill));
+int fillweight = floor(random(min_fill, max_fill));
 
 int inner_size;
 int inner_border;
@@ -21,7 +21,8 @@ int inner_border;
 int scl;
 int dpos;
 
-color background_color = #FCFCFC;//A4;
+//color background_color = #FCFCFC;//A4;
+color background_color = #f5e7dc;
 //color background_color = #FFDFD1BF;
 color font_color = #77282828;
 
@@ -41,20 +42,46 @@ color font_color = #77282828;
 //  0xFFF0F3F7  // white
 //};
 
-color tileColors[]  = {
-  0xFF015EAD, // blue
-  0xFF015EAD, // blue
-  0xFF015EAD, // blue
-  0xFFF3BA30, // yellow
-  0xFFF3BA30, // yellow
-  0xFFF3BA30, // yellow
-  0xFFEE1B27, // red
-  0xFFEE1B27, // red
-  0xFFEE1B27, // red
-  0xFF222222, // black
-  0xFFF0F3F7, // white
-  0xFFF0F3F7  // white
+color tileColors[][]  = {{
+    0xFF015EAD, // blue
+    0xFF015EAD, // blue
+    0xFF015EAD, // blue
+    0xFFF3BA30, // yellow
+    0xFFF3BA30, // yellow
+    0xFFF3BA30, // yellow
+    0xFFEE1B27, // red
+    0xFFEE1B27, // red
+    0xFFEE1B27, // red
+    0xFF222222, // black
+    0xFFF0F3F7, // white
+    0xFFF0F3F7  // white
+  }, {
+    #3b6c97,
+    #ca3f28
+  }, {
+    #d3633b,
+    #3f544b
+  }, {
+    #f6cc9f,
+    #eec180,
+    #253944,
+    #938a61,
+    #649383,
+    #619483,
+    #eca04e,
+    #3d6d71,
+    #e8a14f,
+    #e36326,
+    #cc3627,
+    #d15d2c,
+    #e5a24b,
+    #7ea689,
+    #253941,
+    #b6c0a5
+  }
 };
+
+int colorSet=0;
 
 ArrayList<Tile> tiles = new ArrayList<Tile>();
 
@@ -79,6 +106,8 @@ void init() {
   dpos = inner_border / 2;
 
   int rows = ceil(cols * ( height *1.0 / width));
+
+  colorSet = floor(random(tileColors.length));
 
   tiles.clear();
 
@@ -109,7 +138,7 @@ void keyPressed() {
     {
     case 's':
       {
-        saveFrame("frames/####.tif");
+        saveFrame("frames/####.png");
         break;
       }
 
@@ -124,6 +153,12 @@ void keyPressed() {
       {
         if (fillweight > min_fill)
           fillweight--;
+        redraw();
+        break;
+      }
+    case 'c':
+      {
+        init();
         redraw();
         break;
       }
@@ -238,10 +273,10 @@ class Tile {
   }
 
   color getColor() {
-    color c =  tileColors[ floor(random(tileColors.length))];
+    color c =  tileColors[colorSet][ floor(random(tileColors[colorSet].length))];
 
     while ( c == lastColor)
-      c =  tileColors[ floor(random(tileColors.length))];
+      c =  tileColors[colorSet][ floor(random(tileColors[colorSet].length))];
 
     lastColor = c;
     return c;

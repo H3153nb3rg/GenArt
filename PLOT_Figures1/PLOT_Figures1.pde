@@ -33,7 +33,8 @@ int nrCorners = 5;
 float nrIterations = 62;
 float radiusMin = 10;
 float radiusMax = 370;
-float lineWidth = 0.1;
+float lineWidthMin = 0.1;
+float lineWidthMax = 3.0;
 float nbWaves = 2;
 float angleRotation = 0.07;
 
@@ -78,6 +79,8 @@ void draw()
     {
       beginRecord(SVG, "data/image_"+timestamp()+".svg");
 
+      handyPencilRenderer.setIsHandy(false);
+
       //svg = createGraphics(800, 800, SVG, "data/image_"+timestamp()+".svg");
       //svg.beginDraw();
       //handyPencilRenderer.setGraphics(svg);
@@ -96,7 +99,7 @@ void draw()
     for (int n=0; n<nrIterations; n++)
     {
       pushMatrix();
-      
+
       rotate( map( sin(nbWaves*n/(nrIterations-1)*TWO_PI), -1, 1, -angleRotation, angleRotation) );
 
       circle(nrCorners, map(n, 0, nrIterations-1, radiusMax, radiusMin), n);
@@ -113,7 +116,7 @@ void draw()
     {
       //svg.dispose();
       //svg.endDraw();
-
+      handyPencilRenderer.setIsHandy(true);
       endRecord();
       bExportSVG = false;
     }
@@ -153,11 +156,11 @@ void keyPressed()
 }
 
 // --------------------------------------------------
-void circle(int nrCorners, float radius,int index)
+void circle(int nrCorners, float radius, int index)
 {
   handyPencilRenderer.setRoughness(roughness);
-  strokeWeight(map(index,1,nrIterations,1,lineWidth));
-  
+  strokeWeight(map(index, 1, nrIterations, lineWidthMin, lineWidthMax));
+
   handyPencilRenderer.beginShape();
 
   for (int i=0; i<nrCorners; i++)
@@ -165,7 +168,7 @@ void circle(int nrCorners, float radius,int index)
     float angle = -PI/2+float(i)*TWO_PI/float(nrCorners);
     handyPencilRenderer.vertex( radius*cos(angle), radius*sin(angle) );
   }
-  
+
   handyPencilRenderer.endShape(CLOSE);
 }
 
@@ -210,7 +213,9 @@ void initControls()
   y+=hSlider+margin;
   cp5.addSlider("roughness").setSize(wSlider, hSlider).setPosition(x, y).setLabel("Roughness").setRange(0, 7).setNumberOfTickMarks(7).setValue(roughness);
   y+=hSlider+margin;
-  cp5.addSlider("lineWidth").setSize(wSlider, hSlider).setPosition(x, y).setLabel("LineWidth").setRange(0.1, 1).setNumberOfTickMarks(10).setValue(lineWidth);
+  cp5.addSlider("lineWidthMin").setSize(wSlider, hSlider).setPosition(x, y).setLabel("LineWidth MIN").setRange(0.1, 4).setNumberOfTickMarks(10).setValue(lineWidthMin);
+  y+=hSlider+margin;
+  cp5.addSlider("lineWidthMax").setSize(wSlider, hSlider).setPosition(x, y).setLabel("LineWidth MAX").setRange(0.1, 4).setNumberOfTickMarks(10).setValue(lineWidthMax);
 
   cp5.setBroadcast(true);
 }
@@ -233,7 +238,7 @@ void drawControls()
     pushStyle();
     noStroke();
     fill(0, 100);
-    rect(0, 0, width, 200);
+    rect(0, 0, width, 220);
     popStyle();
     cp5.draw();
   }

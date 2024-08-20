@@ -21,6 +21,18 @@ int inner_border;
 int scl;
 int dpos;
 
+int[][] figures = {
+  {1, 4, 5, 6, 7, 9, 12, 13, 15, 16, 17, 18}, // sqaures
+  {0, 2, 3, 8, 10, 11, 14}  // circles
+};
+
+int currentSet = 0;
+
+boolean singleFigureOnly = false;
+int singleFigure = -1;
+
+
+
 //color background_color = #FCFCFC;//A4;
 color background_color = #f5e7dc;
 //color background_color = #FFDFD1BF;
@@ -186,6 +198,17 @@ void keyPressed() {
       {
         tilt = !tilt;
       }
+    case 'f':
+      {
+        singleFigureOnly = !singleFigureOnly;
+        if (singleFigureOnly)
+        {
+          currentSet = floor(random(figures.length));
+          singleFigure = figures[currentSet][floor(random(figures[currentSet].length))];
+        }
+      }
+
+
     default:
 
       redraw();
@@ -298,7 +321,14 @@ class Tile {
     color fillColor = getColor();
     int figure = floor(random(fillweight));
 
+    if (singleFigureOnly)
+      figure = singleFigure;
+    else
+    {
+      // currentSet = floor(random(figures.length));
 
+      // figure = figures[currentSet][floor(random(figures[currentSet].length))];
+    }
     fill(fillColor);
 
     switch (figure) {

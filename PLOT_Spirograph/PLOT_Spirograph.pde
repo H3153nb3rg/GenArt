@@ -118,16 +118,62 @@ void setup()
 {
   size (900, 900);
 
-  init();
+
   background(backgroundColor);
   noFill();
 
-  //  frameRate(4);
+  if (!initFromFile())
+  {
+    init();
+  }
+}
+
+boolean initFromFile() {
+
+  boolean initialized = false;
+
+  Orbit next = centerCircle;
+
+  JSONObject json = loadJSONObject("data.json");
+
+  JSONObject settings = json.getJSONObject("settings");
+  penDistance = settings.getFloat("penDistance");
+  int circles =   settings.getInt("circles");
+
+  for ( int i =0; i < circles; i++ )
+  {
+    JSONObject circlej = json.getJSONObject("circle"+i);
+
+    if ( i == 0)
+    {
+      centerCircle = new Orbit(width/2, height/2, random(width/5), false, null);
+      next = centerCircle;
+    } else
+    {
+      next = next.addChild();
+    }
+
+    next.x = circlej.getFloat("x");
+    next.y = circlej.getFloat("y");
+    next.r = circlej.getFloat("r");
+    next.speed = circlej.getFloat("speed");
+    next.angle = circlej.getFloat("angle");
+    next.steps = circlej.getInt("steps");
+    next.ratio = circlej.getFloat("ratio");
+    next.innerCircle = circlej.getBoolean("innerCircle");
+  }
+
+  path = new ArrayList<PVector> ();
+
+  initialized = true;
+  
+  return initialized;
 }
 
 void init() {
 
   path = new ArrayList<PVector> ();
+
   centerCircle = new Orbit(width/2, height/2, random(width/5), false, null);
 
   Orbit next = centerCircle;
@@ -249,9 +295,9 @@ void saveSettings()
 
   JSONObject settings = new JSONObject();
   settings.setFloat("penDistance", penDistance);
+  settings.setInt("circles", i);
 
   json.setJSONObject("settings", settings);
-
 
   saveJSONObject(json, baseFilename+".json");
 }
@@ -259,7 +305,7 @@ void saveSettings()
 void save()
 {
   setBaseFilename();
-  saveFrame(baseFilename + ".tif");
+  saveFrame(baseFilename + ".png");
   saveSettings();
   bExportSVG = true;
 }
@@ -293,6 +339,7 @@ void keyPressed()
       }
     case 'u':
       {
+        path.clear();
         useSteps = !useSteps;
         break;
       }

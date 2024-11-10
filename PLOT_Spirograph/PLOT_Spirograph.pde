@@ -102,8 +102,8 @@ boolean bExportSVG = false;
 boolean showCircles = true;
 boolean showPath = false;
 boolean useSteps = false;
-int masterSteps = 99;
-
+int globalSpeed = 1;
+int globalSpeedSteps = 5;
 color backgroundColor = 51;
 String baseFilename ="";
 
@@ -132,41 +132,55 @@ boolean initFromFile() {
 
   boolean initialized = false;
 
-  Orbit next = centerCircle;
-
-  JSONObject json = loadJSONObject("data.json");
-
-  JSONObject settings = json.getJSONObject("settings");
-  penDistance = settings.getFloat("penDistance");
-  int circles =   settings.getInt("circles");
-
-  for ( int i =0; i < circles; i++ )
+  try
   {
-    JSONObject circlej = json.getJSONObject("circle"+i);
 
-    if ( i == 0)
+    Orbit next = centerCircle;
+
+    JSONObject json = loadJSONObject("spiro.json");
+
+    JSONObject settings = json.getJSONObject("settings");
+    penDistance = settings.getFloat("penDistance");
+    int circles =   settings.getInt("circles");
+
+    showCircles = settings.getBoolean("showCircles");
+    showPath = settings.getBoolean("showPath");
+    useSteps = settings.getBoolean("useSteps");
+    globalSpeed = settings.getInt("globalSpeed");
+
+    for ( int i =0; i < circles; i++ )
     {
-      centerCircle = new Orbit(width/2, height/2, random(width/5), false, null);
-      next = centerCircle;
-    } else
-    {
-      next = next.addChild();
+      JSONObject circlej = json.getJSONObject("circle"+i);
+
+      if ( i == 0)
+      {
+        centerCircle = new Orbit(width/2, height/2, random(width/5), false, null);
+        next = centerCircle;
+      } else
+      {
+        next = next.addChild();
+      }
+
+      next.x = circlej.getFloat("x");
+      next.y = circlej.getFloat("y");
+      next.r = circlej.getFloat("r");
+      next.speed = circlej.getFloat("speed");
+      next.angle = circlej.getFloat("angle");
+      next.steps = circlej.getInt("steps");
+      next.ratio = circlej.getFloat("ratio");
+      next.innerCircle = circlej.getBoolean("innerCircle");
     }
 
-    next.x = circlej.getFloat("x");
-    next.y = circlej.getFloat("y");
-    next.r = circlej.getFloat("r");
-    next.speed = circlej.getFloat("speed");
-    next.angle = circlej.getFloat("angle");
-    next.steps = circlej.getInt("steps");
-    next.ratio = circlej.getFloat("ratio");
-    next.innerCircle = circlej.getBoolean("innerCircle");
+    path = new ArrayList<PVector> ();
+
+    initialized = true;
+  }
+  catch (Exception x )
+  {
+    println("XXX: "+x.toString());
   }
 
-  path = new ArrayList<PVector> ();
 
-  initialized = true;
-  
   return initialized;
 }
 
@@ -183,41 +197,61 @@ void init() {
 }
 
 
+void update(int iterations) {
+
+  for ( int i = 0; i < iterations; i++) {
+
+    Orbit current = centerCircle;
+    Orbit last = centerCircle;
+
+    current = centerCircle;
+    last = centerCircle;
+
+    while (current != null) {
+
+      current.update();
+
+      last = current;
+
+      current = current.child;
+    }
+
+    // calc the point
+    float xx = last.x + cos(last.angle) * penDistance;
+    float yy = last.y + sin(last.angle) * penDistance;
+
+    path.add(new PVector(xx, yy));
+  }
+}
+
 void draw() {
+
   background(51);
   noFill();
 
   boolean wasShow = showCircles;
   boolean wasShowPath = showPath;
 
-  Orbit current = centerCircle;
-  Orbit last = centerCircle;
+  update(globalSpeed);
 
-  //showCircles = false;
-  //  for (int i = 0; i < masterSteps; i++)
-  //  {
+  if ( showCircles) {
+    Orbit current = centerCircle;
+    Orbit last = centerCircle;
 
-  //    if ( i == masterSteps-1)
-  //      showCircles = wasShow;
+    current = centerCircle;
+    last = centerCircle;
 
-  current = centerCircle;
-  last = centerCircle;
-
-  while (current != null) {
-    current.update();
-    //if (current.parent != null)
-    if ( showCircles)
+    while (current != null) {
       current.show();
-    last = current;
+      last = current;
 
-    current = current.child;
-  }
-  // }
+      current = current.child;
+    }
 
-  float xx = last.x + cos(last.angle) * penDistance;
-  float yy = last.y + sin(last.angle) * penDistance;
+    // the dot
+    float xx = last.x + cos(last.angle) * penDistance;
+    float yy = last.y + sin(last.angle) * penDistance;
 
-  if (showCircles) {
     line (last.x, last.y, xx, yy);
 
     stroke(color(239, 239, 0, 100));
@@ -225,8 +259,6 @@ void draw() {
     ellipse(xx, yy, 5, 5);
     noFill();
   }
-
-  path.add(new PVector(xx, yy));
 
   if (bExportSVG)
   {
@@ -296,6 +328,10 @@ void saveSettings()
   JSONObject settings = new JSONObject();
   settings.setFloat("penDistance", penDistance);
   settings.setInt("circles", i);
+  settings.setBoolean("showCircles", showCircles);
+  settings.setBoolean("showPath", showPath);
+  settings.setBoolean("useSteps", useSteps);
+  settings.setInt("globalSpeed", globalSpeed);
 
   json.setJSONObject("settings", settings);
 
@@ -341,6 +377,18 @@ void keyPressed()
       {
         path.clear();
         useSteps = !useSteps;
+        break;
+      }
+    case '+':
+      {
+        globalSpeed += globalSpeedSteps;
+        break;
+      }
+    case '-':
+      {
+        globalSpeed -= globalSpeedSteps;
+        if ( globalSpeed <= 0)
+          globalSpeed = 1;
         break;
       }
     }

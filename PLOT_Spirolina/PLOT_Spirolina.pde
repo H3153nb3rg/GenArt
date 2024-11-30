@@ -56,6 +56,6 @@ void draw() {
 
 void mousePressed() {
   baseFilename = "frames/spirolina_"+a+"_"+b+"_"+h;
-  save(baseFilename+".tif");
+  save(baseFilename+".png");
   saveSVG = true;
 }

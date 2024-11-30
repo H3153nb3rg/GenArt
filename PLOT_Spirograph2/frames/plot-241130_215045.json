@@ -1,0 +1,22 @@
+{
+  "settings": {
+    "penDistance": 95.91635131835938,
+    "useSteps": false,
+    "globalSpeed": 191,
+    "circles": 3,
+    "showPath": true,
+    "showCircles": true
+  },
+  "circle2": {
+    "r": 59.187255859375,
+    "innerCircle": false
+  },
+  "circle0": {
+    "r": 51.07490158081055,
+    "innerCircle": false
+  },
+  "circle1": {
+    "r": 66.11795043945312,
+    "innerCircle": false
+  }
+}

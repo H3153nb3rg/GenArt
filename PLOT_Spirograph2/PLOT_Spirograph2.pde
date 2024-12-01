@@ -218,7 +218,7 @@ boolean initFromFile() {
       float newradius = circlej.getFloat("r");
       boolean innerCircle = circlej.getBoolean("innerCircle");
       // int steps = circlej.getInt("steps");
-
+      
       if ( i == 0)
       {
         centerCircle = new Orbit(width/2, height/2, newradius, false, null);
@@ -229,7 +229,7 @@ boolean initFromFile() {
       }
 
       circles.add(drawingCircle);
-
+      
     }
 
     initializeSettings();
@@ -277,7 +277,6 @@ void initializeSettings() {
   settings.centerX = width/2;
   settings.centerY = height/2;
 
-
   settings.penRad = penDistance;
   settings.radii.add( circles.get(0).r);
   settings.types.add( ' ' );
@@ -308,7 +307,7 @@ void initializeSettings() {
         settings.spinPitches.add( settings.radii.get(c - 1) / settings.radii.get(c) - 1);
       }
     } else {
-      settings.types.add( 'e' );
+      // settings.types.add( 'e' ); // ??????????????????
       if (c > 1) {
         settings.drawPitches.add( settings.spinPitches.get(c - 2));
         settings.spinPitches.add( settings.radii.get(c - 1) / settings.radii.get(c) + 1);
@@ -343,7 +342,7 @@ void drawOneCircle(float x, float y, float r, boolean fill) {
 
   // circle
   stroke(color(239, 0, 0));
-  strokeWeight(1);
+  strokeWeight(2);
   noFill();
 
   if (fill)
@@ -378,6 +377,8 @@ void drawCircles() {
 
   //start at the center
   Point pt = new Point( settings.centerX, settings.centerY);
+
+//   println( settings.types );
 
   c = 1;
   //draw rotor Circles
@@ -430,6 +431,7 @@ void drawCircles() {
     //pen pitch set in last circle iteration
     Point penPt = circlePoint(pt2.x, pt2.y, thisRad, i * penPitch);
     if ( showCircles) {
+      strokeWeight(0.5);
       line (pt2.x, pt2.y, penPt.x, penPt.y);
     }
     pt.x = pt2.x;

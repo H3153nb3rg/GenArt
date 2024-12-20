@@ -163,6 +163,10 @@ int globalSpeedSteps = 5;
 color backgroundColor = 51;
 String baseFilename ="";
 
+
+color lineColor = #FFFF0000;
+color circleColor = #550000AA;
+
 //---------------------------------
 
 ArrayList<PVector> path;
@@ -341,10 +345,13 @@ Point circlePoint(float a, float b, float r, float ng) {
 void drawOneCircle(float x, float y, float r, boolean fill) {
 
   // circle
-  stroke(color(239, 0, 0));
-  strokeWeight(2);
-  noFill();
-
+  // stroke(color(239, 0, 0));
+  // strokeWeight(2);
+  // noFill();
+  
+  noStroke();  
+  fill(circleColor);
+  
   if (fill)
     fill(color(239, 239, 0, 100));
 
@@ -429,11 +436,12 @@ void drawCircles() {
 
     //draw radius
     //pen pitch set in last circle iteration
-    Point penPt = circlePoint(pt2.x, pt2.y, thisRad, i * penPitch);
-    if ( showCircles) {
-      strokeWeight(0.5);
-      line (pt2.x, pt2.y, penPt.x, penPt.y);
-    }
+    // Point penPt = circlePoint(pt2.x, pt2.y, thisRad, i * penPitch);
+    //if ( showCircles) {
+    //  stroke(lineColor);
+    //  strokeWeight(0.5);
+    //  line (pt2.x, pt2.y, penPt.x, penPt.y);
+    //}
     pt.x = pt2.x;
     pt.y = pt2.y;
 
@@ -451,6 +459,9 @@ void drawCircles() {
 
   //line from center to pen
   if ( showCircles) {
+    stroke(lineColor);
+    strokeWeight(2);
+    
     line (pt.x, pt.y, penPt.x, penPt.y);
 
     //circle for pen Point
